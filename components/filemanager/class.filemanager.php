@@ -245,7 +245,9 @@ class Filemanager extends Common {
             
             if(extension_loaded('mbstring')) {
               if(!mb_check_encoding($output, 'UTF-8')) {
-                  if(mb_check_encoding($output, 'ISO-8859-1')) {
+                  if (mb_check_encoding($output, 'KOI8-U')) {
+                      $output = mb_convert_encoding($content, 'UTF-8', 'KOI8-U');
+                  } elseif (mb_check_encoding($output, 'ISO-8859-1')) {
                       $output = utf8_encode($output);
                   } else {
                       $output = mb_convert_encoding($content, 'UTF-8');
