@@ -149,7 +149,8 @@
                 $('#context-menu .no-external').show();
             }
             // Show menu
-            var top = e.pageY;
+            var top = e.pageY - 5;
+            var left = e.pageX - 5;
             if (top > $(window).height() - $('#context-menu').height()) {
                 top -= $('#context-menu').height();
             }
@@ -161,7 +162,7 @@
             $('#context-menu')
                 .css({
                     'top': top + 'px',
-                    'left': e.pageX + 'px',
+                    'left': left + 'px',
                     'max-height': max + 'px'
                 })
                 .fadeIn(200)
@@ -375,7 +376,7 @@
                     var openResponse = codiad.jsend.parse(data);
                     if (openResponse != 'error') {
                         node.removeClass('loading');
-                        codiad.active.open(path, openResponse.content, openResponse.mtime, false, focus);
+                        codiad.active.open(path, openResponse.content, openResponse.encoding, openResponse.mtime, false, focus);
                     }
                 });
             } else {
@@ -460,13 +461,13 @@
         // Save file
         //////////////////////////////////////////////////////////////////
 
-        saveFile: function(path, content, callbacks) {
-            this.saveModifications(path, {content: content}, callbacks);
+        saveFile: function(path, content, encoding, callbacks) {
+            this.saveModifications(path, {content: content, encoding: encoding}, callbacks);
         },
 
-        savePatch: function(path, patch, mtime, callbacks) {
+        savePatch: function(path, patch, encoding, mtime, callbacks) {
             if (patch.length > 0)
-                this.saveModifications(path, {patch: patch, mtime: mtime}, callbacks);
+                this.saveModifications(path, {patch: patch, encoding: encoding, mtime: mtime}, callbacks);
             else if (typeof callbacks.success === 'function'){
                 var context = callbacks.context || this;
                 callbacks.success.call(context, mtime);

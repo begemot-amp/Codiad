@@ -48,7 +48,7 @@
             return !!this.sessions[path];
         },
 
-        open: function(path, content, mtime, inBackground, focus) {
+        open: function(path, content, encoding, mtime, inBackground, focus) {
             if (focus === undefined) {
                 focus = true;
             }
@@ -81,6 +81,7 @@
 
                 session.path = path;
                 session.serverMTime = mtime;
+                session.encoding = encoding;
                 _this.sessions[path] = session;
                 session.untainted = content.slice(0);
                 if (!inBackground && focus) {
@@ -487,11 +488,11 @@
                     changed: newContent
                 }, function(success, patch){
                     if (success) {
-                        codiad.filemanager.savePatch(path, patch, session.serverMTime, {
+                        codiad.filemanager.savePatch(path, patch, session.encoding, session.serverMTime, {
                             success: handleSuccess
                         });
                     } else {
-                        codiad.filemanager.saveFile(path, newContent, {
+                        codiad.filemanager.saveFile(path, newContent, session.encoding, {
                             success: handleSuccess
                         });
                     }

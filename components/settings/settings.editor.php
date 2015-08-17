@@ -14,6 +14,7 @@
             <option value="chaos">Chaos</option>
             <option value="clouds">Clouds</option>
             <option value="clouds_midnight">Clouds - Midnight</option>
+			<option value="cloud9_night">Cloud9 - Night</option>
             <option value="cobalt">Cobalt</option>
             <option value="crimson_editor">Crimson Editor</option>
             <option value="dawn">Dawn</option>

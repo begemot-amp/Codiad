@@ -475,7 +475,7 @@ table [class^="icon-"], [class*=" icon-"] {
     user-select: none;
 }
 
-#current-file, #current-mode{
+#current-file, #current-mode, #current-encoding {
     float: left;
 }
 

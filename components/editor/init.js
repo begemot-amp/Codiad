@@ -14,6 +14,7 @@
 
     // Editor modes that have been loaded
     var editorModes = {};
+    
 
     var codiad = global.codiad;
     codiad._cursorPoll = null;
@@ -27,6 +28,7 @@
     // modes available for selecting
     var availableTextModes = new Array(
         'abap',
+		'abc',
         'actionscript',
         'ada',
         'apache_conf',
@@ -51,10 +53,14 @@
         'django',
         'dockerfile',
         'dot',
+		'eiffel',
         'ejs',
+		'elixir',
+		'elm',
         'erlang',
         'forth',
         'ftl',
+		'gcode',
         'gherkin',
         'gitignore',
         'glsl',
@@ -67,6 +73,7 @@
         'html',
         'html_ruby',
         'ini',
+		'io',
         'jack',
         'jade',
         'java',
@@ -77,19 +84,25 @@
         'jsx',
         'julia',
         'latex',
+		'lean',
         'less',
         'liquid',
         'lisp',
+		'live-script',
         'livescript',
         'logiql',
         'lsl',
         'lua',
         'luapage',
         'lucene',
+		'mask',
         'matlab',
         'makefile',
         'markdown',
+		'maze',
         'mel',
+		'mips-assempler',
+		'mipsassempler',
         'mushcode',
         'mysql',
         'nix',
@@ -101,6 +114,7 @@
         'php',
         'plain_text',
         'powershell',
+		'praat',
         'prolog',
         'protobuf',
         'python',
@@ -121,6 +135,7 @@
         'soy_template',
         'space',
         'sql',
+		'sqlserver',
         'stylus',
         'svg',
         'tcl',
@@ -381,6 +396,7 @@
    
         rootContainer: null,
 
+        defaultTextMode: 'perl',
         fileExtensionTextMode: {},
         
         init: function(){
@@ -676,6 +692,12 @@
                 }  else {
                     $('#current-mode').html('text');
                 }
+                var currEncoding = session.encoding;
+                if(currEncoding){
+                    $('#current-encoding').html(currEncoding);
+                }  else {
+                    $('#current-encoding').html('Auto');
+                }
         },
 
         //////////////////////////////////////////////////////////////////
@@ -690,6 +712,7 @@
             $('#editor-region').append($('<div>').attr('id', 'editor'));
             $('#current-file').html('');
             $('#current-mode').html('');
+            $('#current-encoding').html('');
             this.instances = [];
             this.activeInstance = null;
         },
@@ -817,14 +840,14 @@
 
         selectMode: function(e) {
             if(typeof(e) != 'string'){
-                return 'text';
+                return this.defaultTextMode;
             }
             e = e.toLowerCase();
             
             if(e in this.fileExtensionTextMode){
                 return this.fileExtensionTextMode[e];
             }else{
-                return 'text';
+                return this.defaultTextMode;
             }
         },
 
@@ -937,6 +960,22 @@
         setContent: function(c, i) {
             i = i || this.getActive();
             i.getSession().setValue(c);
+        },
+
+        /////////////////////////////////////////////////////////////////
+        //
+        // Set file encoding of the editor
+        //
+        // This display encoding of server file, local data in UTF-8
+        // Parameters:
+        //   e - {String} encoding
+        //   i - {Editor} (Defaults to active editor)
+        //
+        /////////////////////////////////////////////////////////////////
+
+        setEncoding: function(e, i) {
+            i = i || this.getActive();
+            i.getSession().setEncoding(e);
         },
 
         /////////////////////////////////////////////////////////////////

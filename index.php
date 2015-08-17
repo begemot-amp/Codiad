@@ -318,6 +318,8 @@ if(isset($_SESSION['theme'])) {
                 <div class="divider"></div>
                 <a id="current-mode"><span class="icon-layout"></span></a>                
                 <div class="divider"></div>
+                <div id="current-encoding"><span class="icon-layout"></span></div>                
+                <div class="divider"></div>
                 <div id="current-file"></div>
             </div>
             <div id="changemode-menu" class="options-menu">

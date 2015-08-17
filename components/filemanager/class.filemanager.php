@@ -71,7 +71,7 @@ class Filemanager extends Common {
         // Modify\Create
         if(!empty($get['new_name'])){ $this->new_name = $get['new_name']; }
 
-        foreach(array('content', 'mtime', 'patch') as $key){
+        foreach(array('content', 'encoding', 'mtime', 'patch') as $key){
             if(!empty($post[$key])){
                 if(get_magic_quotes_gpc()){
                     $this->$key = stripslashes($post[$key]);
@@ -243,14 +243,18 @@ class Filemanager extends Common {
         if(is_file($this->path)){
             $output = file_get_contents($this->path);
             
+            $encoding = 'UTF-8';
             if(extension_loaded('mbstring')) {
               if(!mb_check_encoding($output, 'UTF-8')) {
                   if (mb_check_encoding($output, 'KOI8-U')) {
-                      $output = mb_convert_encoding($content, 'UTF-8', 'KOI8-U');
+                    $output = mb_convert_encoding($output, 'UTF-8', 'KOI8-U');
+                    $encoding = 'KOI8-U';
                   } elseif (mb_check_encoding($output, 'ISO-8859-1')) {
-                      $output = utf8_encode($output);
+                    $output = utf8_encode($output);
+                    $encoding = 'ISO-8859-1';
                   } else {
-                      $output = mb_convert_encoding($content, 'UTF-8');
+                    $output = mb_convert_encoding($output, 'UTF-8');
+                    $encoding = 'UTF-8';
                   }
               }
             }
@@ -259,6 +263,7 @@ class Filemanager extends Common {
             $this->data = '"content":' . json_encode($output);
             $mtime = filemtime($this->path);
             $this->data .= ', "mtime":'.$mtime;
+            $this->data .= ', "encoding":"' . $encoding . '"';
         }else{
             $this->status = "error";
             $this->message = "Not A File :".$this->path;
@@ -399,6 +404,7 @@ class Filemanager extends Common {
                 if(is_file($this->path)){
                     $serverMTime = filemtime($this->path);
                     $fileContents = file_get_contents($this->path);
+                    $encoding = $this->encoding;
     
                     if ($this->patch && $this->mtime != $serverMTime){
                         $this->status = "error";
@@ -416,9 +422,16 @@ class Filemanager extends Common {
     
                     if($file = fopen($this->path, 'w')){
                         if ($this->patch){
+                        	if ( $encoding ) {
+                        		$fileContents = mb_convert_encoding($fileContents, 'UTF-8', $encoding);
+                        	}
+                        	mb_internal_encoding( 'UTF-8' );
                             $dmp = new diff_match_patch();
                             $p = $dmp->patch_apply($dmp->patch_fromText($this->patch), $fileContents);
                             $this->content = $p[0];
+                        	if ( $encoding ) {
+                        		$this->content = mb_convert_encoding($this->content, $encoding, 'UTF-8');
+                        	}
                             //DEBUG : file_put_contents($this->path.".orig",$fileContents );
                             //DEBUG : file_put_contents($this->path.".patch", $this->patch);
                         }
@@ -429,9 +442,10 @@ class Filemanager extends Common {
                         } else {
                             // Unless stat cache is cleared the pre-cached mtime will be
                             // returned instead of new modification time after editing
-                            // the file.
+                            // the file.////
                             clearstatcache();
                             $this->data = '"mtime":'.filemtime($this->path);
+                            $this->data .= ', "encoding":"' . $encoding . '"';
                             $this->status = "success";
                         }
     
